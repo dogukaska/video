@@ -9,9 +9,9 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="theme-color" content="#efede8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1f2022" media="(prefers-color-scheme: dark)">
-<script src="theme.js?v=1"></script>
-<link rel="stylesheet" href="style.css?v=1">
-<script type="module" src="app.js?v=1"></script>
+<script src="theme.js?v=2"></script>
+<link rel="stylesheet" href="style.css?v=2">
+<script type="module" src="app.js?v=2"></script>
 </head>
 <body>
 <header>
@@ -81,6 +81,8 @@
 
     <div id="g-card" class="card glass hidden">
       <video id="g-video" playsinline controls muted preload="auto"></video>
+      <div id="g-frame-box" class="frame-box hidden"><img id="g-frame" alt="Seçilen andaki kare"><span class="hint" id="g-frame-note">Kare hazırlanıyor…</span></div>
+      <input type="range" id="g-range" min="0" max="0" step="0.1" value="0" aria-label="Başlangıç">
       <div class="opts">
         <div class="row">
           <span class="lbl">Başlangıç</span>
