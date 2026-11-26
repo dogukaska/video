@@ -1,4 +1,4 @@
-import { decodeAudio, toMp3, toWav } from "./lib/audio.js?v=2";
+import { decodeAudio, toMp3, toWav } from "./lib/audio.js?v=3";
 import { makeGif } from "./lib/gif.js?v=3";
 import { run as ffRun, probe as ffProbe } from "./lib/ff.js?v=3";
 
@@ -241,8 +241,8 @@ function showFrame(t) {
 }
 
 function setStart(t, from) {
-  t = Math.max(0, Math.min(G.duration || 0, t));
-  if (from !== "num") $("g-start").value = t.toFixed(1);
+  t = Math.max(0, Math.min(Number($("g-start").max), t));
+  $("g-start").value = t.toFixed(1);
   if (from !== "range") $("g-range").value = t;
   if (G.ff) showFrame(t);
   else if (from !== "video" && video.readyState >= 1) video.currentTime = t;
@@ -286,8 +286,8 @@ $("g-go").addEventListener("click", async () => {
   $("g-result").classList.add("hidden");
   try {
     const D = G.ff ? G.duration : video.duration;
-    let start = Math.max(0, parseFloat($("g-start").value) || 0);
-    if (start >= D) start = Math.max(0, D - G.dur);
+    const start = Math.max(0, Math.min(Number($("g-start").max), parseFloat($("g-start").value) || 0));
+    $("g-start").value = start.toFixed(1);
     const dur = Math.min(G.dur, D - start);
     let blob;
     if (G.ff) {
