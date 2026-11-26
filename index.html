@@ -11,7 +11,7 @@
 <meta name="theme-color" content="#1f2022" media="(prefers-color-scheme: dark)">
 <script src="/theme.js?v=20261126c"></script>
 <link rel="stylesheet" href="style.css?v=2">
-<script type="module" src="app.js?v=3"></script>
+<script type="module" src="app.js?v=4"></script>
 <link rel="stylesheet" href="/tool-links.css?v=20261126b">
 <link rel="stylesheet" href="/ui-compact.css?v=20261126d">
 </head>
@@ -20,16 +20,16 @@
   <a class="home" href="/"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg> Uygulamalar</a>
   <h1>Video Araçları</h1>
   <p class="sub">Dosyan hiçbir yere yüklenmez, her şey bu cihazda yapılır.</p>
-  <nav class="tabs glass" role="tablist">
-    <button class="tab active" data-tab="audio" role="tab"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> Sesini çıkar</button>
-    <button class="tab" data-tab="gif" role="tab"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9.5v5"/><path d="M12 9.5v5"/><path d="M12 9.5h3"/><path d="M12 12h2"/><path d="M17.5 9.5v5"/></svg> GIF yap</button>
+  <nav class="tabs glass" role="tablist" aria-label="Video işlemi">
+    <button class="tab active" id="tool-tab-audio" data-tab="audio" role="tab" aria-controls="tab-audio" aria-selected="true" tabindex="0"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> Sesini çıkar</button>
+    <button class="tab" id="tool-tab-gif" data-tab="gif" role="tab" aria-controls="tab-gif" aria-selected="false" tabindex="-1"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9.5v5"/><path d="M12 9.5v5"/><path d="M12 9.5h3"/><path d="M12 12h2"/><path d="M17.5 9.5v5"/></svg> GIF yap</button>
   </nav>
 </header>
 
 <main>
   <nav class="tool-links" aria-label="Diğer araçlar"><a href="./ses-kirp/">Ses Kırp</a></nav>
   <!-- SES -->
-  <section id="tab-audio" class="panel">
+  <section id="tab-audio" role="tabpanel" aria-labelledby="tool-tab-audio" class="panel">
     <label class="drop glass" id="a-drop">
       <input type="file" id="a-file" accept="video/*,audio/*,.mov,.mkv">
       <span class="drop-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M20 15v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4"/></svg></span>
@@ -74,7 +74,7 @@
   </section>
 
   <!-- GIF -->
-  <section id="tab-gif" class="panel hidden">
+  <section id="tab-gif" role="tabpanel" aria-labelledby="tool-tab-gif" class="panel hidden">
     <label class="drop glass" id="g-drop">
       <input type="file" id="g-file" accept="video/*,.mov,.mkv">
       <span class="drop-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M20 15v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4"/></svg></span>
