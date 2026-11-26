@@ -2,7 +2,8 @@ const $ = id => document.getElementById(id);
 const fileInput = $("file");
 const transcript = $("transcript");
 const status = text => { $("status").textContent = text; };
-let worker, busy = false, request = 0;
+let worker, videoWorker, busy = false, request = 0;
+const isVideo = file => file.type.startsWith("video/") || /\.(mp4|mov|m4v|webm|mkv|avi)$/i.test(file.name);
 
 function setBusy(value) {
   busy = value;
@@ -17,9 +18,15 @@ function clearWorker() {
 }
 
 function finishError(text) {
+  clearVideoWorker();
   clearWorker();
   setBusy(false);
   status(text);
+}
+
+function clearVideoWorker() {
+  videoWorker?.terminate();
+  videoWorker = null;
 }
 
 function createWorker() {
@@ -53,13 +60,12 @@ function updateOutput() {
   $("copy").disabled = $("download").disabled = !transcript.value.trim();
 }
 
-async function decode(file) {
-  if (!file.size || file.size > 100 * 1024 * 1024) throw new Error("100 MB’tan küçük, geçerli bir ses dosyası seç.");
+async function decodeAudio(file) {
   const context = new OfflineAudioContext(1, 1, 16000);
   let audio;
   try { audio = await context.decodeAudioData(await file.arrayBuffer()); }
   catch { throw new Error("Ses dosyası açılamadı. M4A, MP3 veya WAV biçimini dene."); }
-  if (audio.duration > 30 * 60) throw new Error("30 dakikadan kısa bir ses kaydı seç.");
+  if (audio.duration > 30 * 60) throw new Error("En fazla 30 dakikalık bir ses kaydı seç.");
   let samples = audio.getChannelData(0);
   if (audio.numberOfChannels > 1) {
     samples = samples.slice();
@@ -69,8 +75,36 @@ async function decode(file) {
     }
     for (let i = 0; i < samples.length; i++) samples[i] /= audio.numberOfChannels;
   }
-  if (!samples.some(sample => Math.abs(sample) >= 0.0001)) throw new Error("Kayıtta ses bulunamadı.");
   return samples;
+}
+
+function transcribe(samples) {
+  if (!samples.some(sample => Math.abs(sample) >= 0.0001)) throw new Error("Dosyada ses bulunamadı.");
+  status("Ses modeli hazırlanıyor…");
+  worker ??= createWorker();
+  worker.postMessage({ id: request, samples }, [samples.buffer]);
+}
+
+function decodeVideo(file) {
+  const instance = new Worker(new URL("./video-audio-worker.js?v=1", import.meta.url), { type: "module" });
+  videoWorker = instance;
+  instance.onmessage = ({ data }) => {
+    if (instance !== videoWorker) return;
+    if (data.type === "status") {
+      status(data.message);
+      return;
+    }
+    clearVideoWorker();
+    if (data.type === "error") {
+      finishError(data.message);
+      return;
+    }
+    try { transcribe(data.samples); } catch (error) { finishError(error.message); }
+  };
+  instance.onerror = () => {
+    if (instance === videoWorker) finishError("Video çözücü başlatılamadı. Tarayıcıyı güncelleyip yeniden dene.");
+  };
+  instance.postMessage(file);
 }
 
 fileInput.addEventListener("change", () => {
@@ -87,21 +121,28 @@ $("run").addEventListener("click", async () => {
   setBusy(true);
   $("output").hidden = true;
   transcript.value = "";
-  status("Ses dosyası okunuyor…");
   try {
-    const samples = await decode(file);
+    if (!file.size || file.size > 100 * 1024 * 1024) {
+      throw new Error("En fazla 100 MB büyüklüğünde, geçerli bir ses veya video dosyası seç.");
+    }
+    if (isVideo(file)) {
+      status("Videonun sesi hazırlanıyor…");
+      decodeVideo(file);
+      return;
+    }
+    status("Ses dosyası okunuyor…");
+    const samples = await decodeAudio(file);
     if (id !== request) return;
-    worker ??= createWorker();
-    worker.postMessage({ id, samples }, [samples.buffer]);
+    transcribe(samples);
   } catch (error) {
     if (id !== request) return;
-    setBusy(false);
-    status(error.message || "Ses dosyası işlenemedi.");
+    finishError(error.message || "Dosya işlenemedi.");
   }
 });
 
 $("cancel").addEventListener("click", () => {
   request++;
+  clearVideoWorker();
   clearWorker();
   setBusy(false);
   status("İşlem iptal edildi.");
