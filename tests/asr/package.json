@@ -1,0 +1,11 @@
+{
+  "name": "dijital-caki-asr-tests",
+  "private": true,
+  "scripts": {
+    "test": "node --test metrics.test.mjs",
+    "benchmark": "node benchmark.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

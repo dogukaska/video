@@ -1,0 +1,15 @@
+name: Tarayıcı regresyonu
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    uses: dogukaska/dogukaska.github.io/.github/workflows/browser-tests.yml@main

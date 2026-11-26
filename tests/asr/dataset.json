@@ -1,0 +1,39 @@
+{
+  "name": "Google FLEURS",
+  "config": "tr_tr",
+  "split": "test",
+  "revision": "e8902c08388808c03401f633b045795dfca3bfa4",
+  "license": "CC BY 4.0",
+  "clips": [
+    {
+      "file": "fleurs-1747.ogg",
+      "source": "10147164563742619338.wav",
+      "reference": "Güreşçi arkadaşları da Luna'ya saygılarını sundular."
+    },
+    {
+      "file": "fleurs-1908.ogg",
+      "source": "10199707715835400660.wav",
+      "reference": "Bu, bazı fiiller ve nesneler arasında ayrım yapmanın önemli bir yoludur."
+    },
+    {
+      "file": "fleurs-2002.ogg",
+      "source": "10213509574977034508.wav",
+      "reference": "Bu, oyunculara cihazı havada hareket ettirerek video oyunlarındaki hareket ve eylemleri kontrol etme imkanı sunacaktır."
+    },
+    {
+      "file": "fleurs-1884.ogg",
+      "source": "10175328357718171270.wav",
+      "reference": "Özellikle mikro ifadeleri doğru bir şekilde yorumlama yöntemi ile bir kişinin yalan söyleyip söylemediğinin anlaşılabileceği öne sürülüyor."
+    },
+    {
+      "file": "fleurs-1692.ogg",
+      "source": "10067972835475076305.wav",
+      "reference": "Japonya'nın nükleer ajansına göre, tesiste radyoaktif sezyum ve iyodin tespit edildi."
+    },
+    {
+      "file": "fleurs-1729.ogg",
+      "source": "10206694987828197818.wav",
+      "reference": "Örneğin, Kuzey Carolina'daki Bennet Okulu'ndan öğrenciler her yıl Eyalet Başkenti'ne yaptıkları gezilerle ilgili bir web sitesi tasarlarlar, her yıl web sitesi yeniden düzenlenir, ancak eski sürümler bir not defteri olarak kullanılmak üzere çevrimiçi olarak tutulur."
+    }
+  ]
+}
