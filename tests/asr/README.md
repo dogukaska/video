@@ -14,7 +14,7 @@ Sistemde kurulu Chromium’u kullanmak için `ASR_CHROMIUM_PATH=/usr/bin/chromiu
 
 Her kaydın referansını, model metnini, kelime hata oranını (WER) ve karakter hata oranını (CER) gösterir. Karşılaştırma Unicode normalleştirmesi ve Türkçe küçük harfe çevirme uygular, kesme işaretlerini siler ve diğer noktalamayı boşluk sayar. Türkçe harfleri korur. CER boşlukları hariç tutar. Toplam oranlar ekleme, silme ve değiştirme sayılarının tüm referans kelime ve karakter sayısına bölünmesiyle hesaplanır. `baseline.json` ilk ölçümü ve izin verilen sapmayı saklar. Yeni bir model veya normalleştirme değişikliği ölçümü etkilediğinde, bu dosyanın güncellemesini yeni sonuçla birlikte gözden geçir.
 
-İlk ölçüm %38,95 WER ve %11,48 CER. Otomatik test sırasıyla 3 ve 1,5 yüzde puanı artışa izin verir.
+GitHub Actions’ta kullanılan Playwright Chromium 151 sürümündeki başlangıç ölçümü %40,00 WER ve %12,12 CER. Otomatik test sırasıyla 3 ve 1,5 yüzde puanı artışa izin verir. Sistem Chromium 156 ile yapılan iki kontrol %38,95 WER ve %11,48 CER verdi.
 
 ## Kayıtların kaynağı
 
