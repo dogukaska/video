@@ -1,15 +1,35 @@
 import { decodeAudio, toMp3, toWav } from "./lib/audio.js?v=2";
-import { makeGif } from "./lib/gif.js?v=2";
+import { makeGif } from "./lib/gif.js?v=3";
 import { run as ffRun, probe as ffProbe } from "./lib/ff.js?v=3";
 
 const $ = (id) => document.getElementById(id);
 
 // ---------- ortak
-document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => {
-  document.querySelectorAll(".tab").forEach((x) => x.classList.toggle("active", x === t));
+const tabs = [...document.querySelectorAll(".tab")];
+tabs.forEach((t) => t.addEventListener("click", () => {
+  for (const button of tabs) {
+    const selected = button === t;
+    button.classList.toggle("active", selected);
+    button.setAttribute("aria-selected", selected);
+    button.tabIndex = selected ? 0 : -1;
+  }
   $("tab-audio").classList.toggle("hidden", t.dataset.tab !== "audio");
   $("tab-gif").classList.toggle("hidden", t.dataset.tab !== "gif");
 }));
+tabs[0].parentElement.addEventListener("keydown", (event) => {
+  const index = tabs.indexOf(event.target);
+  if (index < 0) return;
+  let next;
+  if (event.key === "Home") next = tabs[0];
+  else if (event.key === "End") next = tabs.at(-1);
+  else if (event.key === "ArrowRight") next = tabs[(index + 1) % tabs.length];
+  else if (event.key === "ArrowLeft") next = tabs[(index + tabs.length - 1) % tabs.length];
+  else return;
+  event.preventDefault();
+  next.focus();
+  next.click();
+});
+
 
 function segment(el, onChange) {
   el.addEventListener("click", (e) => {
@@ -49,11 +69,12 @@ function progress(prefix, on, frac, text) {
 // =====================================================================
 // SESİ ÇIKAR
 // =====================================================================
-const A = { file: null, fmt: "mp3", out: null, url: null };
+const A = { file: null, fmt: "mp3", out: null, url: null, busy: false };
 
 dropZone($("a-drop"), $("a-file"), aOpen);
 
 function aOpen(file) {
+  if (A.busy) return;
   A.file = file;
   A.out = null;
   $("a-drop").classList.add("hidden");
@@ -66,14 +87,18 @@ function aOpen(file) {
   const v = document.createElement("video");
   v.preload = "metadata";
   v.src = URL.createObjectURL(file);
-  v.onloadedmetadata = () => { if (isFinite(v.duration)) $("a-info").textContent = `${fmtTime(v.duration)} · ${fmtSize(file.size)}`; URL.revokeObjectURL(v.src); };
+  v.onloadedmetadata = () => { if (A.file === file && isFinite(v.duration)) $("a-info").textContent = `${fmtTime(v.duration)} · ${fmtSize(file.size)}`; URL.revokeObjectURL(v.src); };
   v.onerror = () => URL.revokeObjectURL(v.src);
 }
 
 $("a-x").addEventListener("click", () => {
+  A.file = A.out = null;
+  if (A.url) URL.revokeObjectURL(A.url);
+  A.url = null;
   $("a-card").classList.add("hidden");
   $("a-drop").classList.remove("hidden");
   $("a-player").removeAttribute("src");
+  $("a-player").load();
 });
 
 segment($("a-fmt"), (d) => {
@@ -85,8 +110,10 @@ segment($("a-fmt"), (d) => {
 $("a-q").addEventListener("change", () => $("a-result").classList.add("hidden"));
 
 $("a-go").addEventListener("click", async () => {
-  const go = $("a-go");
-  go.disabled = true;
+  if (!A.file || A.busy) return;
+  const controls = [$("a-go"), $("a-x"), $("a-file"), $("a-q"), ...$("a-fmt").querySelectorAll("button")];
+  A.busy = true;
+  controls.forEach(control => { control.disabled = true; });
   $("a-result").classList.add("hidden");
   try {
     progress("a", true, 0.05, "Ses okunuyor…");
@@ -121,7 +148,10 @@ $("a-go").addEventListener("click", async () => {
   } catch (e) {
     console.error(e);
     progress("a", true, 0, e.message || String(e));
-  } finally { go.disabled = false; }
+  } finally {
+    A.busy = false;
+    controls.forEach(control => { control.disabled = false; });
+  }
 });
 
 $("a-dl").addEventListener("click", () => A.out && download(A.out.blob, A.out.name));
@@ -142,8 +172,11 @@ function setDuration(d) {
 
 let fallbackTimer = null;
 function gOpen(file) {
+  if (G.busy) return;
+  clearTimeout(G.frameTimer);
   G.file = file;
   G.ff = false;
+  G.duration = 0;
   $("g-video").classList.remove("hidden");
   $("g-frame-box").classList.add("hidden");
   $("g-here").classList.remove("hidden");
@@ -169,6 +202,7 @@ video.addEventListener("loadedmetadata", () => {
 
 async function gFallback() {
   if (G.ff || !G.file) return;
+  const file = G.file;
   G.ff = true;
   clearTimeout(fallbackTimer);
   video.pause();
@@ -179,27 +213,30 @@ async function gFallback() {
   $("g-frame-box").classList.remove("hidden");
   $("g-frame-note").textContent = "Bu video tarayıcıda oynatılamıyor, kendi çözücümüzle açılıyor…";
   try {
-    const info = await ffProbe(G.file, (t) => { $("g-frame-note").textContent = t; });
+    const info = await ffProbe(file, (t) => { if (G.file === file) $("g-frame-note").textContent = t; });
+    if (G.file !== file) return;
     if (!info.hasVideo) throw new Error("Bu dosyada görüntü yok.");
     setDuration(info.duration);
     showFrame(0);
   } catch (e) {
-    $("g-frame-note").textContent = e.message || String(e);
+    if (G.file === file) $("g-frame-note").textContent = e.message || String(e);
   }
 }
 
 // yedek modda seçilen anın karesini göster
 function showFrame(t) {
   clearTimeout(G.frameTimer);
+  const file = G.file;
   G.frameTimer = setTimeout(async () => {
     $("g-frame-note").textContent = "Kare hazırlanıyor…";
     try {
-      const blob = await ffRun(G.file, (inp) => ["-ss", String(t), "-i", inp, "-frames:v", "1", "-vf", "scale=640:-2", "-q:v", "4", "kare.jpg"], "kare.jpg", "image/jpeg");
+      const blob = await ffRun(file, (inp) => ["-ss", String(t), "-i", inp, "-frames:v", "1", "-vf", "scale=640:-2", "-q:v", "4", "kare.jpg"], "kare.jpg", "image/jpeg");
+      if (G.file !== file) return;
       if (G.frameUrl) URL.revokeObjectURL(G.frameUrl);
       G.frameUrl = URL.createObjectURL(blob);
       $("g-frame").src = G.frameUrl;
       $("g-frame-note").textContent = "";
-    } catch (e) { $("g-frame-note").textContent = "Kare gösterilemedi"; }
+    } catch (e) { if (G.file === file) $("g-frame-note").textContent = "Kare gösterilemedi"; }
   }, 350);
 }
 
@@ -216,7 +253,15 @@ video.addEventListener("seeked", () => { if (!G.busy) setStart(video.currentTime
 
 $("g-x").addEventListener("click", () => {
   clearTimeout(fallbackTimer);
+  clearTimeout(G.frameTimer);
   G.file = null;
+  G.out = null;
+  for (const key of ["vurl", "frameUrl", "url"]) {
+    if (G[key]) URL.revokeObjectURL(G[key]);
+    G[key] = null;
+  }
+  $("g-frame").removeAttribute("src");
+  $("g-img").removeAttribute("src");
   video.pause();
   video.removeAttribute("src");
   video.load();
@@ -229,11 +274,15 @@ segment($("g-w"), (d) => { G.width = parseInt(d.w, 10); });
 segment($("g-fps"), (d) => { G.fps = parseInt(d.f, 10); });
 
 $("g-go").addEventListener("click", async () => {
+  if (!G.file || G.busy) return;
   if (!G.ff && !video.videoWidth) return progress("g", true, 0, "Video henüz yüklenmedi, biraz bekle.");
   if (G.ff && !G.duration) return progress("g", true, 0, "Video henüz hazır değil, biraz bekle.");
-  const go = $("g-go");
-  go.disabled = true;
+  const controls = ["g-go", "g-x", "g-file", "g-range", "g-start", "g-here"].map($);
+  controls.push(...document.querySelectorAll("#g-dur button, #g-w button, #g-fps button"));
   G.busy = true;
+  controls.forEach(control => { control.disabled = true; });
+  const hadVideoControls = video.controls;
+  video.controls = false;
   $("g-result").classList.add("hidden");
   try {
     const D = G.ff ? G.duration : video.duration;
@@ -249,7 +298,7 @@ $("g-go").addEventListener("click", async () => {
     } else {
       progress("g", true, 0, "Kareler alınıyor…");
       blob = await makeGif(video, { start, dur, width: G.width, fps: G.fps },
-        (f) => progress("g", true, f, f < 0.8 ? `Kareler alınıyor… %${Math.round(f / 0.8 * 100)}` : "GIF hazırlanıyor…"));
+        (f) => progress("g", true, f, `GIF hazırlanıyor… %${Math.round(f * 100)}`));
     }
     G.out = { blob, name: `${baseName(G.file.name)}.gif` };
     if (G.url) URL.revokeObjectURL(G.url);
@@ -261,7 +310,11 @@ $("g-go").addEventListener("click", async () => {
   } catch (e) {
     console.error(e);
     progress("g", true, 0, "GIF yapılamadı: " + (e.message || e));
-  } finally { go.disabled = false; G.busy = false; }
+  } finally {
+    video.controls = hadVideoControls;
+    G.busy = false;
+    controls.forEach(control => { control.disabled = false; });
+  }
 });
 
 $("g-dl").addEventListener("click", () => G.out && download(G.out.blob, G.out.name));
