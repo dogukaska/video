@@ -12,4 +12,4 @@ Tarayıcının açamadığı videolar (ör. iPhone HEVC .mov) için yedek çöz�
 
 Kütüphaneler: [lamejs](https://github.com/zhuker/lamejs) (LGPL-3.0, MP3), [gifenc](https://github.com/mattdesl/gifenc) (MIT, GIF).
 
-Video dosyalarındaki konuşmayı yazıya çevirme desteği ve Türkçe konuşma tanıma testleri OpenAI Codex desteğiyle geliştirildi.
+Video Araçları’nda ses çıkarma ve GIF oluşturma özelliklerine Claude, videodaki konuşmayı yazıya çevirme ve Türkçe konuşma tanıma testlerine OpenAI Codex katkıda bulundu.
