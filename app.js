@@ -1,6 +1,6 @@
 import { decodeAudio, toMp3, toWav } from "./lib/audio.js?v=2";
 import { makeGif } from "./lib/gif.js?v=2";
-import { run as ffRun, probe as ffProbe } from "./lib/ff.js?v=2";
+import { run as ffRun, probe as ffProbe } from "./lib/ff.js?v=3";
 
 const $ = (id) => document.getElementById(id);
 
