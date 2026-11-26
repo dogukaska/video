@@ -1,4 +1,4 @@
-import {decodeAudio,toMp3,toWav} from "../lib/audio.js?v=2";
+import {decodeAudio,toMp3,toWav} from "../lib/audio.js?v=3";
 const $ = (id) => document.getElementById(id);
 const audio = $("audio");
 let buffer, name, playbackUrl, limit, token = 0;
