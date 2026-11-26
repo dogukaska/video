@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ses Kırp · Dijital Çakı</title>
+<meta name="theme-color" content="#efede8">
+<link rel="icon" href="/icons/dijital-caki.svg">
+<link rel="stylesheet" href="/tool.css?v=20261126b">
+<script src="/theme.js?v=20261125d"></script>
+<script type="module" src="app.js"></script>
+</head>
+<body><main class="tool">
+<header><a class="back" href="/video/">Araçlara dön</a>
+<h1>Ses Kırp</h1><p class="intro">Başlangıcı ve bitişi seç, dinle ve seçili bölümü indir.</p></header>
+<section class="panel"><label for="file">Ses dosyası</label><input id="file" type="file" accept="audio/*">
+<p id="status" role="status"></p>
+<div id="editor" hidden><audio id="audio" controls preload="metadata"></audio>
+<div class="row"><label>Başlangıç (sn)<input id="start" type="number" min="0" step="0.01" value="0"></label>
+<label>Bitiş (sn)<input id="end" type="number" min="0" step="0.01"></label></div>
+<div class="row"><button id="listen">Seçimi dinle</button><button id="wav" class="primary">WAV indir</button><button id="mp3">MP3 indir</button></div>
+</div></section>
+</main></body></html>
