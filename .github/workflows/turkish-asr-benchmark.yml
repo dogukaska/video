@@ -1,0 +1,39 @@
+name: Türkçe ses tanıma
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/turkish-asr-benchmark.yml'
+      - 'ses-yaziya/**'
+      - 'vendor/transformers/**'
+      - 'tests/asr/**'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/turkish-asr-benchmark.yml'
+      - 'ses-yaziya/**'
+      - 'vendor/transformers/**'
+      - 'tests/asr/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: tests/asr
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: tests/asr/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npx playwright install --with-deps --only-shell chromium
+      - run: npm run benchmark
