@@ -4,20 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sesi Yazıya Çevir · Dijital Çakı</title>
-<meta name="description" content="Türkçe ses kayıtlarını tarayıcıda metne çevir.">
+<meta name="description" content="Ses kayıtları ve videolardaki Türkçe konuşmayı tarayıcıda metne çevir.">
 <meta name="theme-color" content="#efede8">
 <link rel="icon" href="/icons/dijital-caki.svg">
 <link rel="stylesheet" href="/tool.css?v=20261126d">
 <script src="/theme.js?v=20261126c"></script>
-<script type="module" src="app.js?v=1"></script>
+<script type="module" src="app.js?v=2"></script>
 </head>
 <body><main class="tool">
 <header><a class="back" href="/">Uygulamalar</a>
 <h1>Sesi Yazıya Çevir</h1>
-<p class="intro">Türkçe ses kaydını düzenlenebilir metne çevir. Ses dosyan cihazında kalır.</p></header>
+<p class="intro">Ses kaydındaki veya videodaki Türkçe konuşmayı düzenlenebilir metne çevir. Dosyan cihazında kalır.</p></header>
 <section class="panel">
-<label for="file">Ses dosyası</label>
-<input id="file" type="file" accept="audio/*,.m4a,.mp3,.wav,.ogg,.opus,.webm,.aac,.flac" aria-describedby="model-note">
+<label for="file">Ses veya video dosyası</label>
+<input id="file" type="file" accept="audio/*,video/*,.m4a,.mp3,.wav,.ogg,.opus,.aac,.flac,.mp4,.mov,.m4v,.webm,.mkv,.avi" aria-describedby="file-note model-note">
+<p class="intro" id="file-note">MP3, WAV, M4A, MP4, MOV ve diğer biçimler · 100 MB, 30 dakika</p>
 <p class="intro" id="model-note">İlk kullanımda yaklaşık 100 MB model indirilir.</p>
 <div class="row">
   <button id="run" class="primary" disabled>Yazıya çevir</button>
