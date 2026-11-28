@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Video Düzenle · Dijital Çakı</title>
+<meta name="description" content="Videonun bir bölümünü seç, sesi kapat veya MOV dosyanı tarayıcıda MP4 yap.">
+<link rel="icon" href="/icons/dijital-caki.svg">
+<link rel="stylesheet" href="/tool.css?v=20261126d">
+<link rel="stylesheet" href="./style.css?v=1">
+<script src="/theme.js?v=20261126c"></script>
+<script type="module" src="./app.js?v=1"></script>
+</head>
+<body>
+<main class="tool video-editor">
+<header>
+  <a class="back" href="/#video">Uygulamalar</a>
+  <h1>Video Düzenle</h1>
+  <p class="intro">Videoyu kırp, sesini kaldır veya MP4’e çevir. Dosya cihazında işlenir.</p>
+</header>
+<section class="panel">
+  <label for="file">Video dosyası</label>
+  <input id="file" type="file" accept="video/*,.mp4,.mov,.m4v,.mkv,.webm,.avi,.mts,.m2ts" aria-describedby="file-note">
+  <p class="intro" id="file-note">MP4, MOV, WebM ve diğer biçimler · 100 MiB’a kadar</p>
+  <div id="preview-area" hidden>
+    <video id="preview" controls playsinline preload="metadata" hidden></video>
+    <p id="preview-note" class="intro" hidden>Bu tarayıcı videoyu önizleyemiyor. Süreyi elle girerek devam edebilirsin.</p>
+  </div>
+  <form class="panel" id="edit" hidden>
+    <fieldset id="fields">
+      <div class="times">
+        <label for="start">Başlangıç (sn)
+          <input id="start" inputmode="decimal" maxlength="16" autocomplete="off" value="0">
+        </label>
+        <label for="end">Bitiş (sn)
+          <input id="end" inputmode="decimal" maxlength="16" autocomplete="off" placeholder="Video sonu">
+        </label>
+      </div>
+      <p id="duration" class="intro"></p>
+      <label class="check" for="mute"><input id="mute" type="checkbox"> Sesi kaldır</label>
+      <button class="primary" id="render" type="submit">MP4 hazırla</button>
+    </fieldset>
+  </form>
+  <div id="actions" class="row" hidden>
+    <button id="cancel" type="button" hidden>İptal</button>
+    <a id="download" class="button primary" hidden>MP4 indir</a>
+  </div>
+  <progress id="progress" max="100" aria-label="Video işleme ilerlemesi" hidden></progress>
+  <p id="status" role="status"></p>
+</section>
+</main>
+</body>
+</html>
